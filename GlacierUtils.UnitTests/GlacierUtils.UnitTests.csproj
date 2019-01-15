@@ -34,18 +34,15 @@
     <Compile Include="TreeHashTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\GlacierUtils\GlacierUtils.csproj">
       <Project>{7e8c03ac-d645-498d-afae-202e3089981c}</Project>
       <Name>GlacierUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.3.4.1\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
+    <PackageReference Include="NUnit">
+      <Version>3.4.1</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
