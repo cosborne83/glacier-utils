@@ -5,3 +5,4 @@
 *.DotSettings
 **/bin
 **/obj
+**/.vs
