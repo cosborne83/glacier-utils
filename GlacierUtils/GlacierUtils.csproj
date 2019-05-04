@@ -31,11 +31,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Streams\ChunkHashTransform.cs" />
+    <Compile Include="Streams\ChunkSha256Transform.cs" />
+    <Compile Include="Streams\ChunkMd5Transform.cs" />
     <Compile Include="Streams\RangeStream.cs" />
     <Compile Include="Streams\StreamWrapper.cs" />
-    <Compile Include="Streams\TreeHashTransform.cs" />
-    <Compile Include="TreeHashCalculator.cs" />
+    <Compile Include="Streams\Sha256TreeHashTransform.cs" />
+    <Compile Include="Sha256TreeHashCalculator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

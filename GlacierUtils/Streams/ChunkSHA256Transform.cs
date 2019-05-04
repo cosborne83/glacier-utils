@@ -8,7 +8,7 @@ namespace GlacierUtils.Streams
     /// An ICryptoTransform implementation for calculating a set of SHA256 hashes of configurably sized 
     /// chunks of the input stream.
     /// </summary>
-    public class ChunkHashTransform : ICryptoTransform
+    public class ChunkSha256Transform : ICryptoTransform
     {
         private readonly SHA256Managed _hash = new SHA256Managed();
         private readonly List<byte[]> _hashes = new List<byte[]>();
@@ -17,10 +17,10 @@ namespace GlacierUtils.Streams
         private bool _transformedFinalBlock;
         private bool _disposed;
 
-        public int InputBlockSize { get { return _chunkSize; } }
-        public int OutputBlockSize { get { return _chunkSize; } }
-        public bool CanTransformMultipleBlocks { get { return true; } }
-        public bool CanReuseTransform { get { return false; } }
+        public int InputBlockSize => _chunkSize;
+        public int OutputBlockSize => _chunkSize;
+        public bool CanTransformMultipleBlocks => true;
+        public bool CanReuseTransform => false;
 
         public byte[][] Hashes
         {
@@ -38,7 +38,7 @@ namespace GlacierUtils.Streams
         }
 
         /// <param name="chunkSize">The size of the chunks used for calculating hashes</param>
-        public ChunkHashTransform(int chunkSize)
+        public ChunkSha256Transform(int chunkSize)
         {
             _chunkSize = chunkSize;
             _hashSize = _hash.HashSize / 8;
@@ -54,7 +54,7 @@ namespace GlacierUtils.Streams
         {
             if (_disposed) throw new ObjectDisposedException("Object has been disposed");
             if (_transformedFinalBlock) throw new InvalidOperationException("Final block has already been transformed");
-            if (inputCount % _chunkSize != 0) throw new ArgumentException("Input count is not a multiple of the block size", "inputCount");
+            if (inputCount % _chunkSize != 0) throw new ArgumentException("Input count is not a multiple of the block size", nameof(inputCount));
             if (inputBuffer.Length < inputOffset + inputCount) throw new ArgumentException("Insufficient data in input buffer");
             if (outputBuffer.Length < outputOffset + inputCount) throw new ArgumentException("Insufficient space in output buffer");
 

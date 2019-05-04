@@ -6,18 +6,18 @@ namespace GlacierUtils
 {
     /// <summary>
     /// A SHA256 tree hash calculator that can be used to calculate the resulting tree hash from the chunk
-    /// hashes calculated by e.g. <see cref="ChunkHashTransform"/>.
+    /// hashes calculated by e.g. <see cref="ChunkSha256Transform"/>.
     /// </summary>
-    public static class TreeHashCalculator
+    public static class Sha256TreeHashCalculator
     {
         /// <summary>
         /// Calculate the SHA256 tree hash from a set of chunk hashes
         /// </summary>
-        /// <param name="chunkHashes">The SHA256 hashes of individual chunks</param>
+        /// <param name="sha256Hashes">The SHA256 hashes of individual chunks</param>
         /// <returns>The SHA256 tree hash</returns>
-        public static byte[] CalculateTreeHash(byte[][] chunkHashes)
+        public static byte[] CalculateTreeHash(byte[][] sha256Hashes)
         {
-            return CalculateTreeHash(chunkHashes, 0, chunkHashes.Length);
+            return CalculateTreeHash(sha256Hashes, 0, sha256Hashes.Length);
         }
 
         /// <summary>
@@ -27,26 +27,27 @@ namespace GlacierUtils
         /// This method does not validate whether <paramref name="startIndex"/> and <paramref name="count"/>
         /// form a valid tree hash aligned range.
         /// </remarks>
-        /// <param name="chunkHashes">The SHA256 hashes of individual chunks</param>
+        /// <param name="sha256Hashes">The SHA256 hashes of individual chunks</param>
         /// <param name="startIndex">The starting index to perform the tree hash calculation</param>
         /// <param name="count">The number of chunk hashes to be used for calculating the tree hash</param>
         /// <returns>The SHA256 tree hash</returns>
-        public static byte[] CalculateTreeHash(byte[][] chunkHashes, int startIndex, int count)
+        public static byte[] CalculateTreeHash(byte[][] sha256Hashes, int startIndex, int count)
         {
-            var numHashes = chunkHashes.Length;
-            if (startIndex < 0 || startIndex >= numHashes) throw new ArgumentOutOfRangeException("startIndex", "StartIndex must be non-negative and less than the number of hashes");
-            if (count <= 0) throw new ArgumentOutOfRangeException("count", "Count must be positive");
+            var numHashes = sha256Hashes.Length;
+            if (startIndex < 0 || startIndex >= numHashes) throw new ArgumentOutOfRangeException(nameof(startIndex), "StartIndex must be non-negative and less than the number of hashes");
+            if (count <= 0) throw new ArgumentOutOfRangeException(nameof(count), "Count must be positive");
             if (startIndex + count > numHashes) throw new ArgumentException("Invalid StartIndex or Count");
 
             using (var hash = new SHA256Managed())
             {
                 var hashSize = hash.HashSize / 8;
-                foreach (var chunkHash in chunkHashes)
+                foreach (var sha256Hash in sha256Hashes)
                 {
-                    if (chunkHash == null) throw new ArgumentException("Input hashes must not be null");
-                    if (chunkHash.Length != hashSize) throw new ArgumentException("Invalid hash size in input");
+                    if (sha256Hash == null) throw new ArgumentException("Input hashes must not be null");
+                    if (sha256Hash.Length != hashSize) throw new ArgumentException("Invalid hash size in input");
                 }
-                var thisLevel = chunkHashes;
+
+                var thisLevel = sha256Hashes;
                 var inputOffset = startIndex;
                 var inputHashCount = count;
                 while (inputHashCount > 1)
@@ -62,10 +63,12 @@ namespace GlacierUtils
                         Buffer.BlockCopy(thisLevel[srcOffset++], 0, hashInput, hashSize, hashSize);
                         nextLevel[dstOffset++] = hash.ComputeHash(hashInput);
                     }
+
                     if (inputHashCount % 2 != 0)
                     {
                         nextLevel[dstOffset] = thisLevel[srcOffset];
                     }
+
                     thisLevel = nextLevel;
                     inputOffset = 0;
                     inputHashCount = thisLevel.Length;

@@ -12,15 +12,15 @@ namespace GlacierUtils.UnitTests
         public void TestCompleteFinalBlock()
         {
             var input = new byte[ChunkSize];
-            var chunkHash = new ChunkHashTransform(ChunkSize);
-            chunkHash.TransformFinalBlock(input, 0, input.Length);
-            var hashes = chunkHash.Hashes;
+            var chunkSha256 = new ChunkSha256Transform(ChunkSize);
+            chunkSha256.TransformFinalBlock(input, 0, input.Length);
+            var hashes = chunkSha256.Hashes;
             Assert.AreEqual(1, hashes.Length);
-            var result1 = TreeHashCalculator.CalculateTreeHash(hashes);
+            var result1 = Sha256TreeHashCalculator.CalculateTreeHash(hashes);
 
-            var treeHashCalculator = new TreeHashTransform(ChunkSize);
-            treeHashCalculator.TransformFinalBlock(input, 0, input.Length);
-            var result2 = treeHashCalculator.TreeHash;
+            var sha256TreeHash = new Sha256TreeHashTransform(ChunkSize);
+            sha256TreeHash.TransformFinalBlock(input, 0, input.Length);
+            var result2 = sha256TreeHash.TreeHash;
 
             Assert.AreEqual(result1, result2);
         }
@@ -29,15 +29,15 @@ namespace GlacierUtils.UnitTests
         public void TestIncompleteFinalBlock()
         {
             var input = new byte[ChunkSize / 2];
-            var chunkHash = new ChunkHashTransform(ChunkSize);
-            chunkHash.TransformFinalBlock(input, 0, input.Length);
-            var hashes = chunkHash.Hashes;
+            var chunkSha256 = new ChunkSha256Transform(ChunkSize);
+            chunkSha256.TransformFinalBlock(input, 0, input.Length);
+            var hashes = chunkSha256.Hashes;
             Assert.AreEqual(1, hashes.Length);
-            var result1 = TreeHashCalculator.CalculateTreeHash(hashes);
+            var result1 = Sha256TreeHashCalculator.CalculateTreeHash(hashes);
 
-            var treeHashCalculator = new TreeHashTransform(ChunkSize);
-            treeHashCalculator.TransformFinalBlock(input, 0, input.Length);
-            var result2 = treeHashCalculator.TreeHash;
+            var sha256TreeHash = new Sha256TreeHashTransform(ChunkSize);
+            sha256TreeHash.TransformFinalBlock(input, 0, input.Length);
+            var result2 = sha256TreeHash.TreeHash;
 
             Assert.AreEqual(result1, result2);
         }
@@ -47,26 +47,26 @@ namespace GlacierUtils.UnitTests
         {
             var input = new byte[ChunkSize];
             var output = new byte[ChunkSize];
-            var chunkHash = new ChunkHashTransform(ChunkSize);
+            var chunkSha256 = new ChunkSha256Transform(ChunkSize);
             const int blockCount = 10;
             for (var i = 0; i < blockCount; i++)
             {
                 input[0] = (byte)i;
-                chunkHash.TransformBlock(input, 0, input.Length, output, 0);
+                chunkSha256.TransformBlock(input, 0, input.Length, output, 0);
             }
-            chunkHash.TransformFinalBlock(input, 0, 0);
-            var hashes = chunkHash.Hashes;
+            chunkSha256.TransformFinalBlock(input, 0, 0);
+            var hashes = chunkSha256.Hashes;
             Assert.AreEqual(blockCount, hashes.Length);
-            var result1 = TreeHashCalculator.CalculateTreeHash(hashes);
+            var result1 = Sha256TreeHashCalculator.CalculateTreeHash(hashes);
 
-            var treeHashCalculator = new TreeHashTransform(ChunkSize);
+            var sha256TreeHash = new Sha256TreeHashTransform(ChunkSize);
             for (var i = 0; i < blockCount; i++)
             {
                 input[0] = (byte)i;
-                treeHashCalculator.TransformBlock(input, 0, input.Length, output, 0);
+                sha256TreeHash.TransformBlock(input, 0, input.Length, output, 0);
             }
-            treeHashCalculator.TransformFinalBlock(input, 0, 0);
-            var result2 = treeHashCalculator.TreeHash;
+            sha256TreeHash.TransformFinalBlock(input, 0, 0);
+            var result2 = sha256TreeHash.TreeHash;
 
             Assert.AreEqual(result1, result2);
         }
